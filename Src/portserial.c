@@ -84,7 +84,7 @@ xMBPortSerialPutByte( CHAR ucByte )
      * called. */
 
 	HAL_GPIO_WritePin(TX_Enable_GPIO, TX_Enable_Pin, GPIO_PIN_SET);
-	HAL_UART_Transmit_IT(huart, (char *)&ucByte, 1);
+	HAL_UART_Transmit_IT(huart, (uint8_t *)&ucByte, 1);
 
     return TRUE;
 }
@@ -97,7 +97,7 @@ xMBPortSerialGetByte( CHAR * pucByte )
      */
 
 	HAL_GPIO_WritePin(TX_Enable_GPIO, TX_Enable_Pin, GPIO_PIN_RESET);
-	HAL_UART_Receive_IT(huart, (char *)pucByte, 1);
+	HAL_UART_Receive_IT(huart, (uint8_t *)pucByte, 1);
 
     return TRUE;
 }
