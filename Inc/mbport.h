@@ -82,6 +82,9 @@ BOOL            xMBPortSerialGetByte( CHAR * pucByte );
 BOOL            xMBPortSerialPutByte( CHAR ucByte );
 
 /* ----------------------- Timers functions ---------------------------------*/
+
+void            Modbus_HTIM_Init( TIM_HandleTypeDef *set_htim );
+
 BOOL            xMBPortTimersInit( USHORT usTimeOut50us );
 
 void            xMBPortTimersClose( void );

@@ -73,6 +73,6 @@ vMBPortTimersDisable(  )
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if((++counter) >= timeout) {
-		( void )pxMBPortCBTimerExpired(  );
+	    ( void )pxMBPortCBTimerExpired(  );
 	}
 }
