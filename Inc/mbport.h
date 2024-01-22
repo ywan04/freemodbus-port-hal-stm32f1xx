@@ -68,6 +68,9 @@ BOOL            xMBPortEventGet(  /*@out@ */ eMBEventType * eEvent );
 
 /* ----------------------- Serial port functions ----------------------------*/
 
+void            Modbus_UART_Init(UART_HandleTypeDef *uart, GPIO_TypeDef *GPIOx,
+                                 uint16_t Pin);
+
 BOOL            xMBPortSerialInit( UCHAR ucPort, ULONG ulBaudRate,
                                    UCHAR ucDataBits, eMBParity eParity );
 
