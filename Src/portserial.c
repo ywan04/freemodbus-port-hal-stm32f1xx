@@ -43,17 +43,18 @@ vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
     /* If xRxEnable enable serial receive interrupts. If xTxENable enable
      * transmitter empty interrupts.
      */
-
 	if (xRxEnable) {
-		__HAL_UART_ENABLE_IT(huart, UART_IT_RXNE);
+		HAL_GPIO_WritePin(TX_Enable_GPIO, TX_Enable_Pin, GPIO_PIN_RESET);
+		HAL_UART_Receive_IT(huart, (uint8_t *)&xRxEnable, 1);
 	} else {
-		__HAL_UART_DISABLE_IT(huart, UART_IT_RXNE);
+		HAL_UART_AbortReceive(huart);
 	}
 
 	if (xTxEnable) {
-		__HAL_UART_ENABLE_IT(huart, UART_IT_TXE);
+		HAL_GPIO_WritePin(TX_Enable_GPIO, TX_Enable_Pin, GPIO_PIN_SET);
+		HAL_UART_TxCpltCallback(huart);
 	} else {
-		__HAL_UART_DISABLE_IT(huart, UART_IT_TXE);
+		HAL_UART_AbortTransmit(huart);
 	}
 }
 
@@ -72,7 +73,6 @@ xMBPortSerialInit( UCHAR ucPort, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
 	(void) ulBaudRate;
 	(void) ucDataBits;
 	(void) eParity;
-
 	return TRUE;
 }
 
@@ -82,8 +82,6 @@ xMBPortSerialPutByte( CHAR ucByte )
     /* Put a byte in the UARTs transmit buffer. This function is called
      * by the protocol stack if pxMBFrameCBTransmitterEmpty( ) has been
      * called. */
-
-	HAL_GPIO_WritePin(TX_Enable_GPIO, TX_Enable_Pin, GPIO_PIN_SET);
 	HAL_UART_Transmit_IT(huart, (uint8_t *)&ucByte, 1);
 
     return TRUE;
@@ -95,8 +93,6 @@ xMBPortSerialGetByte( CHAR * pucByte )
     /* Return the byte in the UARTs receive buffer. This function is called
      * by the protocol stack after pxMBFrameCBByteReceived( ) has been called.
      */
-
-	HAL_GPIO_WritePin(TX_Enable_GPIO, TX_Enable_Pin, GPIO_PIN_RESET);
 	HAL_UART_Receive_IT(huart, (uint8_t *)pucByte, 1);
 
     return TRUE;
@@ -110,7 +106,7 @@ xMBPortSerialGetByte( CHAR * pucByte )
  */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
-    pxMBFrameCBTransmitterEmpty(  );
+    ( void )pxMBFrameCBTransmitterEmpty(  );
 }
 
 /* Create an interrupt handler for the receive interrupt for your target
@@ -120,5 +116,5 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
  */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
-    pxMBFrameCBByteReceived(  );
+    ( void )pxMBFrameCBByteReceived(  );
 }
