@@ -30,7 +30,7 @@
 /* ----------------------- global variables ---------------------------------*/
 static TIM_HandleTypeDef *htim;
 static uint16_t timeout = 0;
-static uint16_t counter = 0;
+static volatile uint16_t counter = 0;
 
 /* ----------------------- static functions ---------------------------------*/
 

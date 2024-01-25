@@ -31,6 +31,7 @@
 static UART_HandleTypeDef *huart;
 static uint16_t TX_Enable_Pin;
 static GPIO_TypeDef *TX_Enable_GPIO;
+static uint8_t Byte_Received;
 
 /* ----------------------- static functions ---------------------------------*/
 //static void prvvUARTTxReadyISR( void );
@@ -45,14 +46,14 @@ vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
      */
 	if (xRxEnable) {
 		HAL_GPIO_WritePin(TX_Enable_GPIO, TX_Enable_Pin, GPIO_PIN_RESET);
-		HAL_UART_Receive_IT(huart, (uint8_t *)&xRxEnable, 1);
+		HAL_UART_Receive_IT(huart, &Byte_Received, 1);
 	} else {
 		HAL_UART_AbortReceive(huart);
 	}
 
 	if (xTxEnable) {
 		HAL_GPIO_WritePin(TX_Enable_GPIO, TX_Enable_Pin, GPIO_PIN_SET);
-		HAL_UART_TxCpltCallback(huart);
+	    ( void )pxMBFrameCBTransmitterEmpty(  );
 	} else {
 		HAL_UART_AbortTransmit(huart);
 	}
@@ -73,6 +74,7 @@ xMBPortSerialInit( UCHAR ucPort, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
 	(void) ulBaudRate;
 	(void) ucDataBits;
 	(void) eParity;
+
 	return TRUE;
 }
 
@@ -93,7 +95,7 @@ xMBPortSerialGetByte( CHAR * pucByte )
     /* Return the byte in the UARTs receive buffer. This function is called
      * by the protocol stack after pxMBFrameCBByteReceived( ) has been called.
      */
-	HAL_UART_Receive_IT(huart, (uint8_t *)pucByte, 1);
+	*pucByte = Byte_Received;
 
     return TRUE;
 }
@@ -117,4 +119,5 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
     ( void )pxMBFrameCBByteReceived(  );
+	HAL_UART_Receive_IT(huart, &Byte_Received, 1);
 }
